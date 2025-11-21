@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Q4 - Dynamic Form Builder</title>
+  <style>
+    body{font-family:Arial;margin:20px;background:#f6f8fb}
+    .card{background:#fff;padding:14px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.05);max-width:600px}
+    label{display:block;margin-top:10px}
+    input,select,textarea{width:100%;padding:8px;margin-top:6px;border-radius:4px;border:1px solid #ddd}
+    button{margin-top:12px;padding:8px 12px}
+  </style>
+</head>
+<body>
+  <h1>Q4 — Custom Form Builder</h1>
+
+  <div class="card">
+    <div id="formContainer"></div>
+    <button id="submitBtn">Submit</button>
+    <pre id="out" style="margin-top:12px;background:#f0f3f7;padding:8px;border-radius:6px"></pre>
+  </div>
+
+  <script>
+    class FormBuilder {
+      constructor(fields, container){
+        this.fields = fields;
+        this.container = container;
+      }
+      render(){
+        let html = '<form id="dynamicForm">';
+        this.fields.forEach(f=>{
+          if(f.type === 'textarea'){
+            html += `<label>${f.label}<textarea name="${f.name||f.label}"></textarea></label>`;
+          } else if(f.type === 'select'){
+            html += `<label>${f.label}<select name="${f.name||f.label}">` +
+              (f.options||[]).map(o => `<option value="${o.value||o}">${o.label||o}</option>`).join('') +
+              `</select></label>`;
+          } else {
+            html += `<label>${f.label}<input type="${f.type}" name="${f.name||f.label}" /></label>`;
+          }
+        });
+        html += '</form>';
+        this.container.innerHTML = html;
+      }
+      getFormData(){
+        const form = document.getElementById('dynamicForm');
+        const data = {};
+        new FormData(form).forEach((v,k) => {
+          data[k] = v;
+        });
+        return data;
+      }
+    }
+
+    // Example usage:
+    const fields = [
+      {type:'text', label:'Username', name:'username'},
+      {type:'email', label:'Email', name:'email'},
+      {type:'password', label:'Password', name:'password'},
+      {type:'select', label:'Role', name:'role', options:[{value:'user',label:'User'},{value:'admin',label:'Admin'}]},
+      {type:'textarea', label:'Bio', name:'bio'}
+    ];
+
+    const container = document.getElementById('formContainer');
+    const fb = new FormBuilder(fields, container);
+    fb.render();
+
+    document.getElementById('submitBtn').addEventListener('click', ()=>{
+      const data = fb.getFormData();
+      document.getElementById('out').textContent = JSON.stringify(data, null, 2);
+    });
+  </script>
+</body>
+</html>

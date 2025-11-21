@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Q2 - Student Form Validator</title>
+  <style>
+    body{font-family:Arial;margin:20px;background:#fafafa}
+    form{max-width:420px;background:#fff;padding:16px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    label{display:block;margin-top:10px}
+    input{width:100%;padding:8px;margin-top:6px;border:2px solid #ddd;border-radius:4px;box-sizing:border-box}
+    .error{color:#c0392b;font-size:13px;margin-top:6px}
+    .success{color:#27ae60;font-size:13px;margin-top:6px}
+    input.invalid{border-color:#c0392b}
+    input.valid{border-color:#27ae60'}
+    button{margin-top:12px;padding:8px 12px}
+  </style>
+</head>
+<body>
+  <h1>Q2 — Student Registration Validator</h1>
+  <form id="regForm" novalidate>
+    <label>Name
+      <input id="name" type="text" />
+      <div id="nameMsg"></div>
+    </label>
+    <label>Email
+      <input id="email" type="email" />
+      <div id="emailMsg"></div>
+    </label>
+    <label>Phone
+      <input id="phone" type="text" />
+      <div id="phoneMsg"></div>
+    </label>
+    <label>Password
+      <input id="password" type="password" />
+      <div id="passwordMsg"></div>
+    </label>
+    <button type="submit">Register</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('regForm');
+    const nameI = document.getElementById('name');
+    const emailI = document.getElementById('email');
+    const phoneI = document.getElementById('phone');
+    const passI = document.getElementById('password');
+
+    const nameMsg = document.getElementById('nameMsg');
+    const emailMsg = document.getElementById('emailMsg');
+    const phoneMsg = document.getElementById('phoneMsg');
+    const passwordMsg = document.getElementById('passwordMsg');
+
+    // RegExp rules
+    const nameRE = /^[A-Za-z\s]+$/; // only alphabets & spaces
+    const emailRE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRE = /^\d{10}$/;
+    const passRE = /^(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{6,}$/; // at least 1 uppercase,1 number,1 special, min length 6
+
+    function showStatus(inputEl, msgEl, isValid, message){
+      inputEl.classList.toggle('valid', isValid);
+      inputEl.classList.toggle('invalid', !isValid);
+      msgEl.textContent = message || (isValid ? 'Looks good' : 'Invalid');
+      msgEl.className = isValid ? 'success' : 'error';
+    }
+
+    function validateAll(){
+      let ok = true;
+
+      const n = nameI.value.trim();
+      const e = emailI.value.trim();
+      const p = phoneI.value.trim();
+      const pw = passI.value;
+
+      if(!nameRE.test(n)){ showStatus(nameI, nameMsg, false, 'Name must contain only alphabets and spaces'); ok=false; }
+      else showStatus(nameI, nameMsg, true, '');
+
+      if(!emailRE.test(e)){ showStatus(emailI, emailMsg, false, 'Enter a valid email like example@domain.com'); ok=false; }
+      else showStatus(emailI, emailMsg, true, '');
+
+      if(!phoneRE.test(p)){ showStatus(phoneI, phoneMsg, false, 'Phone must be exactly 10 digits'); ok=false; }
+      else showStatus(phoneI, phoneMsg, true, '');
+
+      if(!passRE.test(pw)){ showStatus(passI, passwordMsg, false, 'Password must have uppercase, number and special char'); ok=false; }
+      else showStatus(passI, passwordMsg, true, '');
+      return ok;
+    }
+
+    // Live validation on blur
+    [nameI,emailI,phoneI,passI].forEach(el => el.addEventListener('blur', validateAll));
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      if(validateAll()){
+        alert('Registration successful!');
+        form.reset();
+        [nameMsg,emailMsg,phoneMsg,passwordMsg].forEach(n=>n.textContent='');
+        [nameI,emailI,phoneI,passI].forEach(i=>{i.classList.remove('valid'); i.classList.remove('invalid');});
+      }
+    });
+  </script>
+</body>
+</html>

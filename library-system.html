@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Q3 - Library Management</title>
+  <style>
+    body{font-family:Arial;margin:18px;background:#eef2f7}
+    .book{background:#fff;padding:10px;border-radius:6px;margin:8px 0}
+    input,button{padding:6px;margin:6px 0}
+  </style>
+</head>
+<body>
+  <h1>Q3 — Library Management</h1>
+
+  <div>
+    <h3>Available Books</h3>
+    <div id="available"></div>
+  </div>
+
+  <div style="margin-top:14px">
+    <h3>Issue a Book (Search by ISBN)</h3>
+    <input id="isbnSearch" placeholder="Enter ISBN" />
+    <button id="issueBtn">Issue</button>
+    <button id="returnBtn">Return</button>
+    <div id="actionMsg"></div>
+  </div>
+
+  <script>
+    class Book {
+      constructor(title, author, ISBN, isIssued=false){
+        this.title = title;
+        this.author = author;
+        this.ISBN = ISBN;
+        this.isIssued = Boolean(isIssued);
+      }
+      issueBook(){
+        if(this.isIssued) return false;
+        this.isIssued = true;
+        return true;
+      }
+      returnBook(){
+        if(!this.isIssued) return false;
+        this.isIssued = false;
+        return true;
+      }
+      details(){ return `${this.title} — ${this.author} (ISBN: ${this.ISBN}) ${this.isIssued ? '[ISSUED]' : '[AVAILABLE]'}`; }
+    }
+
+    // sample array of books
+    const books = [
+      new Book('The Alchemist','Paulo Coelho','9780061122415'),
+      new Book('Clean Code','Robert C. Martin','9780132350884'),
+      new Book('Introduction to Algorithms','Cormen','9780262033848', true),
+      new Book('You Don\'t Know JS','Kyle Simpson','9781491904244')
+    ];
+
+    const availableDiv = document.getElementById('available');
+    const isbnInput = document.getElementById('isbnSearch');
+    const issueBtn = document.getElementById('issueBtn');
+    const returnBtn = document.getElementById('returnBtn');
+    const actionMsg = document.getElementById('actionMsg');
+
+    function renderAvailable(){
+      availableDiv.innerHTML = '';
+      books.filter(b => !b.isIssued).forEach(b=>{
+        const d = document.createElement('div'); d.className='book'; d.textContent = b.details();
+        availableDiv.appendChild(d);
+      });
+    }
+
+    function findByISBN(isbn){
+      return books.find(b => b.ISBN === isbn);
+    }
+
+    issueBtn.addEventListener('click', ()=>{
+      const isbn = isbnInput.value.trim();
+      const book = findByISBN(isbn);
+      if(!book){ actionMsg.textContent = 'Book not found'; actionMsg.style.color='red'; return; }
+      if(book.issueBook()){ actionMsg.textContent = `Book issued: ${book.title}`; actionMsg.style.color='green'; }
+      else { actionMsg.textContent = 'Book is already issued'; actionMsg.style.color='red'; }
+      renderAvailable();
+    });
+
+    returnBtn.addEventListener('click', ()=>{
+      const isbn = isbnInput.value.trim();
+      const book = findByISBN(isbn);
+      if(!book){ actionMsg.textContent = 'Book not found'; actionMsg.style.color='red'; return; }
+      if(book.returnBook()){ actionMsg.textContent = `Book returned: ${book.title}`; actionMsg.style.color='green'; }
+      else { actionMsg.textContent = 'Book was not issued'; actionMsg.style.color='red'; }
+      renderAvailable();
+    });
+
+    renderAvailable();
+  </script>
+</body>
+</html>

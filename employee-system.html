@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Q6 - Employee Management</title>
+  <style>
+    body{font-family:Segoe UI,Arial;margin:18px;background:#f4f7fb}
+    .emp{background:#fff;padding:8px;border-radius:6px;margin-bottom:6px}
+  </style>
+</head>
+<body>
+  <h1>Q6 — Employee Management</h1>
+  <div id="list"></div>
+  <div style="margin-top:12px"><strong>Total Annual Payout:</strong> <span id="total"></span></div>
+
+  <script>
+    class Employee {
+      constructor(id, name, department, salary){
+        this.id = id;
+        this.name = name;
+        this.department = department;
+        this.salary = Number(salary); // monthly salary
+      }
+      getAnnualSalary(){
+        return +(this.salary * 12);
+      }
+      applyBonus(percent){
+        this.salary = +(this.salary * (1 + percent/100)).toFixed(2);
+      }
+    }
+
+    const emps = [
+      new Employee(1,'Alice','Engineering',50000),
+      new Employee(2,'Bob','Marketing',35000),
+      new Employee(3,'Charlie','Data',60000),
+      new Employee(4,'Diana','HR',30000),
+      new Employee(5,'Ethan','Sales',40000)
+    ];
+
+    // apply a 10% bonus to employee 3 demonstration
+    emps[2].applyBonus(10);
+
+    const listDiv = document.getElementById('list');
+    emps.forEach(e=>{
+      const d = document.createElement('div');
+      d.className='emp';
+      d.textContent = `${e.id} — ${e.name} | Dept: ${e.department} | Monthly: ₹${e.salary} | Annual: ₹${e.getAnnualSalary()}`;
+      listDiv.appendChild(d);
+    });
+
+    const totalAnnual = emps.reduce((acc,e)=> acc + e.getAnnualSalary(), 0);
+    document.getElementById('total').textContent = '₹' + totalAnnual.toFixed(2);
+    console.log('Total annual payout (reduce):', totalAnnual);
+  </script>
+</body>
+</html>

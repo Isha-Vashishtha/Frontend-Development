@@ -1,0 +1,104 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Q9 - Shopping Cart</title>
+  <style>
+    body{font-family:Arial;margin:20px;background:#f9fbff}
+    .card{background:#fff;padding:12px;border-radius:8px;max-width:560px}
+    input,button{padding:8px;margin-top:8px}
+    .item{padding:8px;border-bottom:1px solid #eee}
+  </style>
+</head>
+<body>
+  <h1>Q9 — Shopping Cart</h1>
+  <div class="card">
+    <div id="items"></div>
+
+    <div style="margin-top:8px">
+      <input id="name" placeholder="Item name" />
+      <input id="price" placeholder="Price" type="number" />
+      <input id="qty" placeholder="Quantity" type="number" value="1" />
+      <button id="add">Add Item</button>
+    </div>
+
+    <div style="margin-top:12px">
+      <strong>Coupon</strong> <input id="coupon" placeholder="SAVE20 or DISC10" />
+      <button id="apply">Apply Coupon</button>
+      <div id="couponMsg"></div>
+    </div>
+
+    <div style="margin-top:12px">
+      <strong>Cart Total:</strong> <span id="total">₹0.00</span>
+    </div>
+  </div>
+
+  <script>
+    class Cart {
+      constructor(){ this.items = []; this.discount = 0; }
+      addItem(name, price, qty=1){
+        this.items.push({name, price: Number(price), qty: Number(qty)});
+      }
+      getTotal(){
+        const subtotal = this.items.reduce((s,i)=> s + i.price * i.qty, 0);
+        const final = +(subtotal * (1 - this.discount/100)).toFixed(2);
+        return { subtotal: +subtotal.toFixed(2), discountPercent: this.discount, total: final };
+      }
+      applyCoupon(code){
+        // Accept SAVE<number> or DISC<number>, capture numeric percent
+        const re = /^(?:SAVE|DISC)(\d{1,2})$/i;
+        const m = code.trim().match(re);
+        if(!m) return false;
+        const percent = Number(m[1]);
+        if(percent <= 0 || percent > 100) return false;
+        this.discount = percent;
+        return true;
+      }
+    }
+
+    const cart = new Cart();
+
+    const itemsDiv = document.getElementById('items');
+    const totalSpan = document.getElementById('total');
+    const couponMsg = document.getElementById('couponMsg');
+
+    function renderItems(){
+      itemsDiv.innerHTML = '';
+      cart.items.forEach((it, idx) => {
+        const d = document.createElement('div'); d.className='item';
+        d.textContent = `${it.name} — ₹${it.price} x ${it.qty} = ₹${(it.price*it.qty).toFixed(2)}`;
+        itemsDiv.appendChild(d);
+      });
+      const res = cart.getTotal();
+      totalSpan.textContent = `₹${res.total.toFixed(2)} (Subtotal: ₹${res.subtotal.toFixed(2)}, Discount: ${res.discountPercent}%)`;
+    }
+
+    document.getElementById('add').addEventListener('click', ()=>{
+      const name = document.getElementById('name').value.trim();
+      const price = document.getElementById('price').value;
+      const qty = document.getElementById('qty').value;
+      if(!name || !price || price <= 0 || qty <= 0){ alert('Enter valid item details'); return; }
+      cart.addItem(name, Number(price), Number(qty));
+      renderItems();
+      document.getElementById('name').value=''; document.getElementById('price').value=''; document.getElementById('qty').value=1;
+    });
+
+    document.getElementById('apply').addEventListener('click', ()=>{
+      const code = document.getElementById('coupon').value.trim();
+      if(cart.applyCoupon(code)){
+        couponMsg.textContent = `Coupon applied: ${cart.discount}% off`;
+        couponMsg.style.color='green';
+      } else {
+        couponMsg.textContent = 'Invalid coupon. Use format SAVE20 or DISC10 (percent 1-100)';
+        couponMsg.style.color='red';
+      }
+      renderItems();
+    });
+
+    // initialize with sample items
+    cart.addItem('Notebook', 120, 2);
+    cart.addItem('Pen', 15, 5);
+    renderItems();
+  </script>
+</body>
+</html>

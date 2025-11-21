@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Q1 - Product Manager</title>
+  <style>
+    body{font-family:Segoe UI,Arial;margin:20px;background:#f7f9fc}
+    .product{padding:10px;border-radius:6px;background:#fff;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+    button{padding:6px 10px;margin-top:8px}
+  </style>
+</head>
+<body>
+  <h1>Q1 — E-Commerce Product Manager</h1>
+
+  <div id="products"></div>
+
+  <script>
+    // Product class
+    class Product {
+      constructor(id, name, price, category){
+        this.id = id;
+        this.name = name;
+        this.price = Number(price);
+        this.category = category;
+      }
+      applyDiscount(percent){
+        if(typeof percent !== 'number') percent = Number(percent);
+        this.price = +(this.price * (1 - percent/100)).toFixed(2);
+      }
+      details(){
+        return `ID: ${this.id} | ${this.name} — ₹${this.price} | Category: ${this.category}`;
+      }
+    }
+
+    // Create some product objects and store in array
+    const products = [
+      new Product(1, 'Laptop Pro', 75999, 'Electronics'),
+      new Product(2, 'Headphones', 2499, 'Electronics'),
+      new Product(3, 'Desk Lamp', 899, 'Home'),
+      new Product(4, 'Office Chair', 11500, 'Furniture'),
+      new Product(5, 'Smart Watch', 9999, 'Wearable')
+    ];
+
+    // Apply 10% discount to product 2 as demonstration
+    products[1].applyDiscount(10);
+
+    // Display all products
+    const container = document.getElementById('products');
+    products.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'product';
+      div.textContent = p.details();
+      container.appendChild(div);
+    });
+
+    // Filter and log products with price > 1000
+    const expensive = products.filter(p => p.price > 1000);
+    console.log('Products with price > 1000:', expensive.map(p => p.details()));
+  </script>
+</body>
+</html>

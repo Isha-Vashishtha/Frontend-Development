@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Q5 - Movie Ticket Booking</title>
+  <style>
+    body{font-family:Arial;margin:20px;background:#f8fafc}
+    .card{background:#fff;padding:12px;border-radius:8px;max-width:420px}
+    input{width:100%;padding:8px;margin-top:6px;border-radius:4px;border:1px solid #ddd}
+    .error{color:#c0392b;font-size:13px}
+    .ticket{margin-top:12px;background:#eef6ff;padding:8px;border-radius:6px}
+    button{margin-top:10px;padding:8px 10px}
+  </style>
+</head>
+<body>
+  <h1>Q5 — Movie Ticket Booking</h1>
+  <div class="card">
+    <label>Name<input id="name" /></label>
+    <div id="nameErr" class="error"></div>
+
+    <label>Email<input id="email" /></label>
+    <div id="emailErr" class="error"></div>
+
+    <label>Seats (1-10)<input id="seats" type="number" min="1" max="10" /></label>
+    <div id="seatsErr" class="error"></div>
+
+    <button id="bookBtn">Book Ticket</button>
+
+    <div id="ticket" class="ticket" style="display:none"></div>
+  </div>
+
+  <script>
+    const nameRE = /^[A-Za-z\s]+$/;
+    const emailRE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    const nameI = document.getElementById('name');
+    const emailI = document.getElementById('email');
+    const seatsI = document.getElementById('seats');
+
+    const nameErr = document.getElementById('nameErr');
+    const emailErr = document.getElementById('emailErr');
+    const seatsErr = document.getElementById('seatsErr');
+    const ticketDiv = document.getElementById('ticket');
+
+    document.getElementById('bookBtn').addEventListener('click', ()=>{
+      const name = nameI.value.trim();
+      const email = emailI.value.trim();
+      const seats = Number(seatsI.value);
+
+      let ok = true;
+
+      if(!nameRE.test(name)){ nameErr.textContent = 'Name must contain only alphabets'; ok=false; } else nameErr.textContent = '';
+      if(!emailRE.test(email)){ emailErr.textContent = 'Enter a valid email'; ok=false; } else emailErr.textContent = '';
+      if(!Number.isInteger(seats) || seats < 1 || seats > 10){ seatsErr.textContent = 'Seats must be an integer between 1 and 10'; ok=false; } else seatsErr.textContent = '';
+
+      if(!ok) { ticketDiv.style.display='none'; return; }
+
+      const booking = { name, email, seats };
+      ticketDiv.style.display='block';
+      ticketDiv.innerHTML = `<strong>Ticket Confirmed</strong>
+        <div>Name: ${booking.name}</div>
+        <div>Email: ${booking.email}</div>
+        <div>Seats: ${booking.seats}</div>`;
+      console.log('Booking object:', booking);
+    });
+  </script>
+</body>
+</html>
